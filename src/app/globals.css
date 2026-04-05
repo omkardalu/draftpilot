@@ -1,0 +1,45 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #f8f9fb;
+  color: #1a1a2e;
+}
+
+/* Typewriter cursor blink */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.cursor-blink {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: #1E2761;
+  margin-left: 2px;
+  vertical-align: middle;
+  animation: blink 0.8s infinite;
+}
+
+/* Smooth textarea */
+textarea:focus {
+  outline: none;
+}
+
+/* Copy button flash */
+@keyframes flash {
+  0% { background-color: #d1fae5; }
+  100% { background-color: transparent; }
+}
+
+.copy-flash {
+  animation: flash 0.4s ease;
+}
