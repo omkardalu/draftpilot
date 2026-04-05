@@ -1,8 +1,6 @@
 import { NextRequest } from 'next/server'
 import OpenAI from 'openai'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 const SYSTEM_PROMPTS: Record<string, string> = {
 
   // ── General modes ──────────────────────────────────────────────
@@ -249,6 +247,8 @@ export async function POST(req: NextRequest) {
   try {
     const { input, mode } = await req.json()
     if (!input || !mode) return new Response(JSON.stringify({ error: 'Missing input or mode' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
+
+    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
 
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS.pr_description
     const userMessage = buildUserMessage(input, mode)
