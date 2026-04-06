@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { MODES, Mode, PR_MODES, GENERAL_MODES } from './modes'
+import HowTo from './HowTo';
 
 type HistoryItem = { mode: Mode; input: string; output: string }
 
@@ -120,9 +121,12 @@ export default function DraftPilot() {
             <span style={{ fontSize: 20, fontWeight: 600, color: '#3b82f6' }}>Pilot</span>
             <p style={{ fontSize: 12, color: '#9ca3af', marginTop: 2 }}>Pick a mode → paste your input → get precise output</p>
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 12, color: '#9ca3af' }}>
-            <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}></span>
-            GPT-4o
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, fontSize: 12, color: '#9ca3af' }}>
+            <a href="/howto" style={{ color: '#3b82f6', textDecoration: 'none', fontWeight: 500 }}>How to use</a>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span style={{ width: 7, height: 7, borderRadius: '50%', background: '#4ade80', display: 'inline-block' }}></span>
+              Gemini 2.5 Flash
+            </div>
           </div>
         </div>
       </header>
