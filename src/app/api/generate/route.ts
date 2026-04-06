@@ -1,5 +1,5 @@
 import { NextRequest } from 'next/server'
-import OpenAI from 'openai'
+import { GoogleGenerativeAI } from '@google/generative-ai'
 
 const SYSTEM_PROMPTS: Record<string, string> = {
 
@@ -248,28 +248,34 @@ export async function POST(req: NextRequest) {
     const { input, mode } = await req.json()
     if (!input || !mode) return new Response(JSON.stringify({ error: 'Missing input or mode' }), { status: 400, headers: { 'Content-Type': 'application/json' } })
 
-    const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+    const apiKey = process.env.GOOGLE_API_KEY || process.env.GEMINI_API_KEY || process.env.OPENAI_API_KEY
+    if (!apiKey) return new Response(JSON.stringify({ error: 'Missing API key' }), { status: 500, headers: { 'Content-Type': 'application/json' } })
 
+    const genAI = new GoogleGenerativeAI(apiKey)
     const systemPrompt = SYSTEM_PROMPTS[mode] ?? SYSTEM_PROMPTS.pr_description
+    
+    // We use gemini-1.5-flash as it's ideal and fast for free tier
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.5-flash',
+      systemInstruction: systemPrompt 
+    })
+
     const userMessage = buildUserMessage(input, mode)
 
-    const stream = await openai.chat.completions.create({
-      model: 'gpt-4o',
-      max_tokens: 2000,
-      temperature: 0.3,
-      stream: true,
-      messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userMessage },
-      ],
+    const result = await model.generateContentStream({
+      contents: [{ role: 'user', parts: [{ text: userMessage }] }],
+      generationConfig: {
+        maxOutputTokens: 2000,
+        temperature: 0.3,
+      }
     })
 
     const encoder = new TextEncoder()
     const readableStream = new ReadableStream({
       async start(controller) {
         try {
-          for await (const chunk of stream) {
-            const text = chunk.choices[0]?.delta?.content ?? ''
+          for await (const chunk of result.stream) {
+            const text = chunk.text()
             if (text) controller.enqueue(encoder.encode(text))
           }
           controller.close()
